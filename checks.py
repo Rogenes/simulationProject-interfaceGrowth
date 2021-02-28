@@ -1,4 +1,4 @@
-from randomNumberGenerator import getRandomNumber
+from randomNumberGenerator import RandomNumberGenerator
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,6 +14,11 @@ import matplotlib.pyplot as plt
 
 def checkRandomHistory():
     l=200
+
+    # In case we need to create a new seed,
+    #   we just have to instanciate a new RandomNumberGenerator object 
+    rng = RandomNumberGenerator(l=l)
+
     coordinates = np.arange(0, 200)
 
     randomNumberHistory = np.zeros(dtype=int, shape=200)
@@ -22,7 +27,7 @@ def checkRandomHistory():
     # checking distribution
     iterationsConcluded = 0
     while iterationsConcluded < iterations:
-        rand = getRandomNumber(l=200)
+        rand = rng.getRandomNumber()
         randomNumberHistory[rand] += 1
         iterationsConcluded += 1
 
