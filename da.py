@@ -5,7 +5,7 @@ from rugosity import getRugosity
 import matplotlib.pyplot as plt
 
 t = 0
-tMax = 10**3
+tMax = 10**4
 
 lValues = [200,400,800,1600]
 
@@ -28,7 +28,7 @@ while t < tMax:
     sample200.append((t,getRugosity(l200))) 
     t+=1
 
-# plt.bar(np.arange(0,200), l200)
+# plt.bar(np.arange(0,lCurrent), l200)
 # plt.ylabel(f'substrate - 1 sample')
 # plt.show()
 
