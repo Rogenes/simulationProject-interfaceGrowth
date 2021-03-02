@@ -3,9 +3,10 @@ import numpy as np
 from randomNumberGenerator import RandomNumberGenerator
 from rugosity import getRugosity
 import matplotlib.pyplot as plt
+import math
 
 t = 0
-tMax = 10**4
+tMax = 10^4
 
 lValues = [200,400,800,1600]
 
@@ -17,15 +18,17 @@ l1600 = np.zeros(dtype=int, shape=1600)
 ##########################
 ##### for tests only #####
 ##########################
+
 lCurrent = 200
 rng = RandomNumberGenerator(l=lCurrent)
 sample200 = [] 
 # single sample
+
 while t < tMax:
     for depositionNumber in range(lCurrent):
         depositionPosition = rng.getRandomNumber()
         l200[depositionPosition] += 1
-    sample200.append((t,getRugosity(l200))) 
+    sample200.append((t, getRugosity(l200)))
     t+=1
 
 # plt.bar(np.arange(0,lCurrent), l200)
