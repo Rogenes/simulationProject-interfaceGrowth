@@ -6,6 +6,33 @@ import matplotlib.pyplot as plt
 import math
 from scipy.optimize import curve_fit
 import time as clockTime
+from numba import jit, int32
+
+@jit(nopython=True)
+def runSamples(sampleMax, tMax, currentSubstractLenght):
+    sampleSubstract = np.zeros(dtype=int32, shape=currentSubstractLenght)
+    sampleRugosity = np.zeros(tMax)
+    finalRugosity = np.zeros(tMax)
+    rng = RandomNumberGenerator(currentSubstractLenght)
+
+    for sample in range(sampleMax):
+        for t in range(tMax):
+            for depositionNumber in range(currentSubstractLenght):
+                depositionPosition = rng.getRandomNumber()
+                sampleSubstract[depositionPosition] += 1
+        
+            sampleRugosity[t] = getRugosity(sampleSubstract)
+        
+        finalRugosity = np.add(finalRugosity, sampleRugosity)
+        
+        sampleSubstract = np.zeros(dtype=int32, shape=currentSubstractLenght)
+        sampleRugosity = np.zeros(tMax)
+    
+    return finalRugosity
+
+#|||||||||||||||||||||||||||||||||||
+#|||||||||||||| START |||||||||||||| 
+#|||||||||||||||||||||||||||||||||||
 
 start = clockTime.time()
 print("START")
@@ -18,44 +45,30 @@ substracts = {
     'l1600': np.zeros(dtype=int, shape=1600)
 }
 
+# Config params
 sample = 0
-sampleMax = 1
-
+sampleMax = 10**3
 t = 0
 tMax = 10**4
+currentSubstractName = 'l200'
+#  end of config params
 
-currentSubstractName = 'l500'
 currentSubstract = substracts[currentSubstractName]
 currentSubstractLenght = len(currentSubstract)
 
-rng = RandomNumberGenerator(l=currentSubstractLenght)
-
-sampleSubstract = np.zeros(dtype=int, shape=currentSubstractLenght)
-sampleRugosity = np.zeros(tMax)
-finalRugosity = np.zeros(tMax)
-
-for sample in range(sampleMax):
-    for t in range(tMax):
-        for depositionNumber in range(currentSubstractLenght):
-            depositionPosition = rng.getRandomNumber()
-            sampleSubstract[depositionPosition] += 1
-    
-        sampleRugosity[t] = getRugosity(sampleSubstract)
-    
-    finalRugosity = np.add(finalRugosity, sampleRugosity)
-     
-    sampleSubstract = np.zeros(dtype=int, shape=currentSubstractLenght)
-    sampleRugosity = np.zeros(tMax)
+#  running samples 
+finalRugosity = runSamples(sampleMax=sampleMax, tMax=tMax, currentSubstractLenght=currentSubstractLenght)
 
 finalRugosity /= sampleMax
 time = np.arange(0, tMax)
 
-log10FinalRugosity = np.log10(finalRugosity)
-log10time = np.log10(np.append(np.arange(1, tMax),tMax))
+# log version of results
+# log10FinalRugosity = np.log10(finalRugosity)
+# log10time = np.log10(np.append(np.arange(1, tMax),tMax))
 
-
-fit = np.polyfit(time, finalRugosity, 1)
-print(fit)
+# polyfit to find coefficients
+# fit = np.polyfit(time, finalRugosity, 1)
+# print(fit)
 
 end = clockTime.time()
 print(f'END: {end - start}')
