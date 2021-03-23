@@ -8,7 +8,8 @@ from numba import jit
 #     return np.mean(substrateSnapshot)
 
 @jit(nopython=True)
-def getRugosity(substrateSnapshot):
+def getRugosity(substrate):
+    substrateSnapshot = substrate
     substrateLength = len(substrateSnapshot)
     meanHeight = np.mean(substrateSnapshot)
     quadraticRugosity = np.sum(((substrateSnapshot - meanHeight)**2))/substrateLength

@@ -3,7 +3,6 @@ import numpy as np
 from randomNumberGenerator import RandomNumberGenerator
 from rugosity import getRugosity
 import matplotlib.pyplot as plt
-import math
 from scipy.optimize import curve_fit
 import time as clockTime
 from numba import jit, int32
@@ -15,6 +14,11 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     finalRugosity = np.zeros(tMax)
     rng = RandomNumberGenerator(currentSubstractLenght)
 
+    snapshotQuantity = 10
+    finalSnapshot = np.zeros(shape=(snapshotQuantity,currentSubstractLenght))
+
+    snapshotPosition = 0
+
     for sample in range(sampleMax):
         for t in range(tMax):
             for depositionNumber in range(currentSubstractLenght):
@@ -22,13 +26,16 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
                 sampleSubstract[depositionPosition] += 1
         
             sampleRugosity[t] = getRugosity(sampleSubstract)
-        
+            
+            if sample == 0 and t%25 == 0  and snapshotPosition < snapshotQuantity:
+                finalSnapshot[snapshotPosition] = sampleSubstract
+                snapshotPosition += 1
+
         finalRugosity = np.add(finalRugosity, sampleRugosity)
-        
-        sampleSubstract = np.zeros(dtype=int32, shape=currentSubstractLenght)
-        sampleRugosity = np.zeros(tMax)
+        sampleSubstract.fill(0)
+        sampleRugosity.fill(0)
     
-    return finalRugosity
+    return finalRugosity, finalSnapshot
 
 #|||||||||||||||||||||||||||||||||||
 #|||||||||||||| START |||||||||||||| 
@@ -47,36 +54,47 @@ substracts = {
 
 # Config params
 sample = 0
-sampleMax = 10**3
+sampleMax = 10**2
 t = 0
 tMax = 10**4
-currentSubstractName = 'l200'
+currentSubstractName = 'l500'
 #  end of config params
 
 currentSubstract = substracts[currentSubstractName]
 currentSubstractLenght = len(currentSubstract)
 
 #  running samples 
-finalRugosity = runSamples(sampleMax=sampleMax, tMax=tMax, currentSubstractLenght=currentSubstractLenght)
+finalRugosity, finalSnapshot = runSamples(sampleMax=sampleMax, tMax=tMax, currentSubstractLenght=currentSubstractLenght)
+
+print(finalSnapshot)
 
 finalRugosity /= sampleMax
-time = np.arange(0, tMax)
+time = np.arange(0, tMax, 1)
 
 # log version of results
 # log10FinalRugosity = np.log10(finalRugosity)
 # log10time = np.log10(np.append(np.arange(1, tMax),tMax))
 
 # polyfit to find coefficients
-# fit = np.polyfit(time, finalRugosity, 1)
-# print(fit)
+fit = np.polyfit(time, finalRugosity, 1)
+print(fit)
 
 end = clockTime.time()
 print(f'END: {end - start}')
 
-plt.plot(time, finalRugosity, 'o', markersize=2, label='real')
-plt.plot(np.unique(time), np.poly1d(np.polyfit(time, finalRugosity, 1))(np.unique(time)), 
-         label='numpy.polyfit')
-plt.ylabel(f'Rugosity')
+
+xAxis = np.arange(0, currentSubstractLenght, 1)
+for index,plot in enumerate(reversed(finalSnapshot)):
+    plt.plot(xAxis, plot, label=f'{index}')
+    plt.fill_between(xAxis, plot)
+
+
+# plt.plot(time, finalRugosity, 'o', markersize=2, label='real')
+# plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)), 
+#          label='polyfit')
+# plt.xlabel(f'Time')
+# plt.ylabel(f'Rugosity')
+
 # plt.xscale('log')
 # plt.yscale('log')
 plt.show()
