@@ -27,7 +27,7 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
         
             sampleRugosity[t] = getRugosity(sampleSubstract)
             
-            if sample == 0 and t%25 == 0  and snapshotPosition < snapshotQuantity:
+            if sample == 0 and t%100 == 0  and snapshotPosition < snapshotQuantity:
                 finalSnapshot[snapshotPosition] = sampleSubstract
                 snapshotPosition += 1
 
@@ -57,7 +57,7 @@ sample = 0
 sampleMax = 10**2
 t = 0
 tMax = 10**4
-currentSubstractName = 'l500'
+currentSubstractName = 'l200'
 #  end of config params
 
 currentSubstract = substracts[currentSubstractName]
@@ -66,14 +66,8 @@ currentSubstractLenght = len(currentSubstract)
 #  running samples 
 finalRugosity, finalSnapshot = runSamples(sampleMax=sampleMax, tMax=tMax, currentSubstractLenght=currentSubstractLenght)
 
-print(finalSnapshot)
-
 finalRugosity /= sampleMax
 time = np.arange(0, tMax, 1)
-
-# log version of results
-# log10FinalRugosity = np.log10(finalRugosity)
-# log10time = np.log10(np.append(np.arange(1, tMax),tMax))
 
 # polyfit to find coefficients
 fit = np.polyfit(time, finalRugosity, 1)
@@ -83,18 +77,16 @@ end = clockTime.time()
 print(f'END: {end - start}')
 
 
+fig, (ax1, ax2) = plt.subplots(1, 2)
+fig.suptitle(f'Snapshot and Rugosity by time')
+
 xAxis = np.arange(0, currentSubstractLenght, 1)
-for index,plot in enumerate(reversed(finalSnapshot)):
-    plt.plot(xAxis, plot, label=f'{index}')
-    plt.fill_between(xAxis, plot)
+for index, plot in enumerate(reversed(finalSnapshot)):
+    ax1.plot(xAxis, plot, label=f'{index}')
+    ax1.fill_between(xAxis, plot)
 
-
-# plt.plot(time, finalRugosity, 'o', markersize=2, label='real')
-# plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)), 
-#          label='polyfit')
-# plt.xlabel(f'Time')
-# plt.ylabel(f'Rugosity')
-
+ax2.plot(time, finalRugosity, label='real')
+# plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)),label='polyfit')
 # plt.xscale('log')
 # plt.yscale('log')
 plt.show()
