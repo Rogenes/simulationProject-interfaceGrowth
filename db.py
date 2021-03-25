@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import time as clockTime
 from numba import jit, int32
+import random
 
 @jit(nopython=True)
 def runSamples(sampleMax, tMax, currentSubstractLenght):
@@ -14,38 +15,33 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     finalRugosity = np.zeros(tMax)
     rng = RandomNumberGenerator(currentSubstractLenght)
 
-    snapshotQuantity = 10
+    snapshotQuantity = 50
     finalSnapshot = np.zeros(shape=(snapshotQuantity,currentSubstractLenght))
 
     snapshotPosition = 0
 
     substractLengthMinusOne = currentSubstractLenght - 1
     
+    randomSampleToCaptureSnapshot = random.randint(0,sampleMax - 1)
+
     for sample in range(sampleMax):
         for t in range(tMax):
             for depositionQuantity in range(currentSubstractLenght):
                 depositionPosition = rng.getRandomNumber()
                 
-                current = depositionPosition
-                lower = (depositionPosition - 1) if (depositionPosition > 0) else 0
-                upper = (depositionPosition + 1) if (depositionPosition < substractLengthMinusOne) else (substractLengthMinusOne)
+                currentValue = sampleSubstract[depositionPosition]
+                lowerValue = sampleSubstract[(depositionPosition - 1)] if (depositionPosition > 0) else sampleSubstract[0]
+                upperValue = sampleSubstract[(depositionPosition + 1)] if (depositionPosition < substractLengthMinusOne) else sampleSubstract[substractLengthMinusOne]
 
-                finalPosition = current
+                finalValue = max([lowerValue, (currentValue + 1), upperValue])
 
-                if sampleSubstract[lower] < sampleSubstract[current] and sampleSubstract[lower] < sampleSubstract[upper]:
-                    finalPosition = lower
-                elif sampleSubstract[upper] < sampleSubstract[current] and sampleSubstract[upper] < sampleSubstract[lower]:
-                    finalPosition = upper
-                else:
-                    finalPosition = current
-
-                sampleSubstract[finalPosition] += 1
+                sampleSubstract[depositionPosition] = finalValue
 
             sampleRugosity[t] = getRugosity(sampleSubstract)
             
-            if sample == 0 and t%(25) == 0  and snapshotPosition < snapshotQuantity:
-                finalSnapshot[snapshotPosition] = sampleSubstract
-                snapshotPosition += 1
+            # if sample == randomSampleToCaptureSnapshot and t%(5) == 0  and snapshotPosition < snapshotQuantity:
+            #     finalSnapshot[snapshotPosition] = sampleSubstract
+            #     snapshotPosition += 1
 
         finalRugosity = np.add(finalRugosity, sampleRugosity)
         sampleSubstract.fill(0)
@@ -70,10 +66,10 @@ substracts = {
 
 # Config params
 sample = 0
-sampleMax = 10**0
+sampleMax = 10**2
 t = 0
-tMax = 10**3
-currentSubstractName = 'l200'
+tMax = 10**5
+currentSubstractName = 'l1600'
 #  end of config params
 
 currentSubstract = substracts[currentSubstractName]
