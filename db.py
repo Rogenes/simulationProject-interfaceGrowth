@@ -1,6 +1,5 @@
 # Rugosity => for each t, create a new point (x,y) = (t, rugosity(t))
 import numpy as np
-from randomNumberGenerator import RandomNumberGenerator
 from rugosity import getRugosity
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -13,7 +12,6 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     sampleSubstract = np.zeros(dtype=int32, shape=currentSubstractLenght)
     sampleRugosity = np.zeros(tMax)
     finalRugosity = np.zeros(tMax)
-    rng = RandomNumberGenerator(currentSubstractLenght)
 
     snapshotQuantity = 50
     finalSnapshot = np.zeros(shape=(snapshotQuantity,currentSubstractLenght))
@@ -60,16 +58,15 @@ print("START")
 substracts = {
     'l200': np.zeros(dtype=int, shape=200),
     'l400': np.zeros(dtype=int, shape=400),
-    'l500': np.zeros(dtype=int, shape=500),
     'l800': np.zeros(dtype=int, shape=800),
     'l1600': np.zeros(dtype=int, shape=1600)
 }
 
 # Config params
 sample = 0
-sampleMax = 10**2
+sampleMax = 10**1
 t = 0
-tMax = 10**5
+tMax = 10**4
 currentSubstractName = 'l1600'
 #  end of config params
 

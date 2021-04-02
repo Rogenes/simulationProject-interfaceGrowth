@@ -1,6 +1,5 @@
 # Rugosity => for each t, create a new point (x,y) = (t, rugosity(t))
 import numpy as np
-from randomNumberGenerator import RandomNumberGenerator
 from rugosity import getRugosity
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -13,7 +12,6 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     sampleSubstract = np.zeros(dtype=int32, shape=currentSubstractLenght)
     sampleRugosity = np.zeros(tMax)
     finalRugosity = np.zeros(tMax)
-    rng = RandomNumberGenerator(currentSubstractLenght)
 
     snapshotQuantity = 10
     finalSnapshot = np.zeros(shape=(snapshotQuantity,currentSubstractLenght))
@@ -50,16 +48,15 @@ print("START")
 substracts = {
     'l200': np.zeros(dtype=int, shape=200),
     'l400': np.zeros(dtype=int, shape=400),
-    'l500': np.zeros(dtype=int, shape=500),
     'l800': np.zeros(dtype=int, shape=800),
     'l1600': np.zeros(dtype=int, shape=1600)
 }
 
 # Config params
 sample = 0
-sampleMax = 10**2
+sampleMax = 10**3
 t = 0
-tMax = 10**5
+tMax = 10**4
 currentSubstractName = 'l200'
 #  end of config params
 
@@ -90,6 +87,6 @@ for index, plot in enumerate(reversed(finalSnapshot)):
 
 ax2.plot(time, finalRugosity, label='real')
 # plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)),label='polyfit')
-# plt.xscale('log')
-# plt.yscale('log')
+plt.xscale('log')
+plt.yscale('log')
 plt.show()
