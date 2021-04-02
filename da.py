@@ -5,6 +5,7 @@ from rugosity import getRugosity
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import time as clockTime
+import random
 from numba import jit, int32
 
 @jit(nopython=True)
@@ -22,7 +23,9 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     for sample in range(sampleMax):
         for t in range(tMax):
             for depositionNumber in range(currentSubstractLenght):
-                depositionPosition = rng.getRandomNumber()
+                # depositionPosition = rng.getRandomNumber()
+                depositionPosition = random.randint(0, currentSubstractLenght)
+
                 sampleSubstract[depositionPosition] += 1
         
             sampleRugosity[t] = getRugosity(sampleSubstract)
@@ -56,7 +59,7 @@ substracts = {
 sample = 0
 sampleMax = 10**2
 t = 0
-tMax = 10**4
+tMax = 10**5
 currentSubstractName = 'l200'
 #  end of config params
 
@@ -83,7 +86,7 @@ fig.suptitle(f'Snapshot and Rugosity by time')
 xAxis = np.arange(0, currentSubstractLenght, 1)
 for index, plot in enumerate(reversed(finalSnapshot)):
     ax1.plot(xAxis, plot, label=f'{index}')
-    ax1.fill_between(xAxis, plot)
+    # ax1.fill_between(xAxis, plot)
 
 ax2.plot(time, finalRugosity, label='real')
 # plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)),label='polyfit')

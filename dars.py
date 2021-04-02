@@ -5,6 +5,7 @@ from rugosity import getRugosity
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import time as clockTime
+import random
 from numba import jit, int32
 
 @jit(nopython=True)
@@ -24,7 +25,8 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     for sample in range(sampleMax):
         for t in range(tMax):
             for depositionQuantity in range(currentSubstractLenght):
-                depositionPosition = rng.getRandomNumber()
+                # depositionPosition = rng.getRandomNumber()
+                depositionPosition = random.randint(0, currentSubstractLenght)
                 
                 current = depositionPosition
                 lower = (depositionPosition - 1) if (depositionPosition > 0) else 0
@@ -70,9 +72,9 @@ substracts = {
 
 # Config params
 sample = 0
-sampleMax = 10**0
+sampleMax = 10**2
 t = 0
-tMax = 10**3
+tMax = 10**4
 currentSubstractName = 'l200'
 #  end of config params
 

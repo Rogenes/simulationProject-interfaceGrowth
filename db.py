@@ -27,8 +27,9 @@ def runSamples(sampleMax, tMax, currentSubstractLenght):
     for sample in range(sampleMax):
         for t in range(tMax):
             for depositionQuantity in range(currentSubstractLenght):
-                depositionPosition = rng.getRandomNumber()
-                
+                # depositionPosition = rng.getRandomNumber()
+                depositionPosition = random.randint(0, currentSubstractLenght)
+
                 currentValue = sampleSubstract[depositionPosition]
                 lowerValue = sampleSubstract[(depositionPosition - 1)] if (depositionPosition > 0) else sampleSubstract[0]
                 upperValue = sampleSubstract[(depositionPosition + 1)] if (depositionPosition < substractLengthMinusOne) else sampleSubstract[substractLengthMinusOne]
