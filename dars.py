@@ -90,9 +90,9 @@ substracts = {
 
 # Config params
 sample = 0
-sampleMax = 10**2
+sampleMax = 10**1
 t = 0
-tMax = 10**6
+tMax = 10**3
 # currentSubstractName = 'l1600'
 #  end of config params
 
@@ -119,7 +119,7 @@ points = {
 
 for index, substractLength in enumerate(finalRugosity):
     
-    # finalRugosity[substractLength] /= sampleMax
+    # finalRugosity[substractLength] = finalRugosity[substractLength]/sampleMax
 
     finalRugosity[substractLength] = finalRugosity[substractLength]/(substractLength**0.5)    
     time[substractLength] = time[substractLength]/(substractLength**2)
@@ -139,27 +139,39 @@ for index, substractLength in enumerate(finalRugosity):
     points[substractLength] = [(logX1,logY1), (logX3,logY3)]
     
 # polyfit to find coefficients
-for length in lengths:
-    xPoints, yPoints = zip(*points[length])
-    fit = np.polyfit(xPoints, yPoints, 1)
-    print(fit)
+# for length in lengths:
+#     xPoints, yPoints = zip(*points[length])
+#     fit = np.polyfit(xPoints, yPoints, 1)
+#     print(fit)
 
 end = clockTime.time()
 print(f'END: {end - start}')
 
-# fig, (ax1, ax2) = plt.subplots(1, 2)
-# fig.suptitle(f'Snapshot and Rugosity by time')
+# PLOT SNAPSHOT
+fig, axes = plt.subplots(2, 2)
+indexes = {
+    0: (0,0),
+    1: (0,1),
+    2: (1,0),
+    3: (1,1),
+}
+for index, substractLength in enumerate(finalSnapshot):
+    xAxis = np.arange(0, substractLength, 1)
+    substractSnapshots = np.flip(finalSnapshot[substractLength])
+    
+    for snapshotInstance in substractSnapshots:
+        axes[indexes[index]].plot(xAxis, snapshotInstance)
+        axes[indexes[index]].fill_between(xAxis, snapshotInstance)
+    axes[indexes[index]].set_title(f'substract {substractLength}')
 
-# xAxis = np.arange(0, currentSubstractLenght, 1)
-# for index, plot in enumerate(reversed(finalSnapshot)):
-#     ax1.plot(xAxis, plot, label=f'{index}')
-#     ax1.fill_between(xAxis, plot)
 
-for substractLength in finalRugosity:
-    plt.plot(time[substractLength], finalRugosity[substractLength], label=f'substract {substractLength}')
-    plt.legend()
-# plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)), label='polyfit')
-plt.title('DARS')
-plt.xscale('log')
-plt.yscale('log')
+# PLOT CURVE
+# for substractLength in finalRugosity:
+#     plt.plot(time[substractLength], finalRugosity[substractLength], label=f'substract {substractLength}')
+#     plt.legend()
+
+# plt.title('DARS')
+# plt.xscale('log')
+# plt.yscale('log')
+
 plt.show()
