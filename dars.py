@@ -6,6 +6,7 @@ from scipy.optimize import curve_fit
 import time as clockTime
 import random
 from numba import jit, int32
+import math
 
 @jit(nopython=True)
 def runSamples(sampleMax, tMax):
@@ -79,6 +80,7 @@ def runSamples(sampleMax, tMax):
 start = clockTime.time()
 print("START")
 
+lengths = [200, 400, 800, 1600]
 substracts = {
     'l200': np.zeros(dtype=int, shape=200),
     'l400': np.zeros(dtype=int, shape=400),
@@ -88,9 +90,9 @@ substracts = {
 
 # Config params
 sample = 0
-sampleMax = 10**1
+sampleMax = 10**2
 t = 0
-tMax = 10**4
+tMax = 10**6
 # currentSubstractName = 'l1600'
 #  end of config params
 
@@ -100,22 +102,47 @@ tMax = 10**4
 #  running samples 
 finalRugosity, finalSnapshot = runSamples(sampleMax=sampleMax, tMax=tMax)
 
-time = np.arange(0, tMax, 1)
-# time = {
-#     200: np.arange(0, tMax, 1),
-#     400: np.arange(0, tMax, 1),
-#     800: np.arange(0, tMax, 1),
-#     1600: np.arange(0, tMax, 1),
-# }
+# time = np.arange(0, tMax, 1)
+time = {
+    200: np.arange(0, tMax, 1),
+    400: np.arange(0, tMax, 1),
+    800: np.arange(0, tMax, 1),
+    1600: np.arange(0, tMax, 1),
+}
 
-for substractLength in finalRugosity:
-    finalRugosity[substractLength] /= sampleMax
-    # finalRugosity[substractLength] /= (substractLength**0.5)    
-    # time[substractLength] = time[substractLength]/(substractLength**2)
+points = {
+    200: np.array([(0,0),(0,0)], dtype="f,f"),
+    400: np.array([(0,0),(0,0)], dtype="f,f"),
+    800: np.array([(0,0),(0,0)], dtype="f,f"),
+    1600: np.array([(0,0),(0,0)], dtype="f,f")
+}
 
+for index, substractLength in enumerate(finalRugosity):
+    
+    # finalRugosity[substractLength] /= sampleMax
+
+    finalRugosity[substractLength] = finalRugosity[substractLength]/(substractLength**0.5)    
+    time[substractLength] = time[substractLength]/(substractLength**2)
+
+    x1 = 1
+    logX1 = math.log10(x1)
+    logY1 = math.log10(finalRugosity[substractLength][x1])
+
+    # x2 = round(tMax/2)
+    # logX2 = math.log10(x2)
+    # logY2 = math.log10(finalRugosity[substractLength][x2])
+
+    x3 = tMax - 1
+    logX3 = math.log10(x3)
+    logY3 = math.log10(finalRugosity[substractLength][x3])
+
+    points[substractLength] = [(logX1,logY1), (logX3,logY3)]
+    
 # polyfit to find coefficients
-# fit = np.polyfit(time, finalRugosity, 1)
-# print(fit)
+for length in lengths:
+    xPoints, yPoints = zip(*points[length])
+    fit = np.polyfit(xPoints, yPoints, 1)
+    print(fit)
 
 end = clockTime.time()
 print(f'END: {end - start}')
@@ -129,9 +156,10 @@ print(f'END: {end - start}')
 #     ax1.fill_between(xAxis, plot)
 
 for substractLength in finalRugosity:
-    plt.plot(time, finalRugosity[substractLength], label=f'substract {substractLength}')
+    plt.plot(time[substractLength], finalRugosity[substractLength], label=f'substract {substractLength}')
     plt.legend()
 # plt.plot(np.unique(time), np.poly1d(fit)(np.unique(time)), label='polyfit')
-# plt.xscale('log')
-# plt.yscale('log')
+plt.title('DARS')
+plt.xscale('log')
+plt.yscale('log')
 plt.show()
