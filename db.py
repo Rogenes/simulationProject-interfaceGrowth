@@ -118,6 +118,14 @@ points = {
     1600: np.array([(0,0),(0,0)], dtype="f,f")
 }
 
+for substractLength in finalRugosity:
+    rugosityArray = finalRugosity[substractLength]
+    with open(f'data/DB/DB{substractLength}.csv', mode='w') as myCsv:
+        for rugosityTime, rugosity in  enumerate(rugosityArray):
+            file = csv.writer(myCsv, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+            file.writerow([rugosityTime, rugosity])
+
+
 for index, substractLength in enumerate(finalRugosity):
     
     # finalRugosity[substractLength] = finalRugosity[substractLength]/sampleMax
