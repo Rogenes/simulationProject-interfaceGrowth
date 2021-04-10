@@ -33,6 +33,7 @@ def runSamples(sampleMax, tMax):
 
 
     for substractLength in lengths:
+        print('Lenght', substractLength)
     
         snapshotPosition = 0
         currentSubstractLenght = substractLength
@@ -40,6 +41,7 @@ def runSamples(sampleMax, tMax):
         sampleSubstract = np.zeros(dtype=int32, shape=currentSubstractLenght)
 
         for sample in range(sampleMax):
+            print(sample)
             for t in range(tMax):
                 for depositionQuantity in range(currentSubstractLenght):
 
@@ -77,7 +79,7 @@ substracts = {
 
 # Config params
 sample = 0
-sampleMax = 10**2
+sampleMax = 10**1
 t = 0
 tMax = 10**4
 
@@ -92,37 +94,38 @@ for index, substractLength in enumerate(finalRugosity):
 end = clockTime.time()
 print(f'END: {end - start}')
 
-for substractLength in finalRugosity:
-    rugosityArray = finalRugosity[substractLength]
-    with open(f'data/DA/DA{substractLength}.csv', mode='w') as myCsv:
-        for rugosityTime, rugosity in  enumerate(rugosityArray):
-            file = csv.writer(myCsv, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-            file.writerow([rugosityTime, rugosity])
+# for substractLength in finalRugosity:
+#     rugosityArray = finalRugosity[substractLength]
+#     with open(f'data/DA/DA{substractLength}.csv', mode='w') as myCsv:
+#         for rugosityTime, rugosity in  enumerate(rugosityArray):
+#             file = csv.writer(myCsv, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+#             file.writerow([rugosityTime, rugosity])
     
 # PLOT SNAPSHOT
-# fig, axes = plt.subplots(2, 2)
-# indexes = {
-#     0: (0,0),
-#     1: (0,1),
-#     2: (1,0),
-#     3: (1,1),
-# }
-# for index, substractLength in enumerate(finalSnapshot):
-#     xAxis = np.arange(0, substractLength, 1)
-#     substractSnapshots = np.flip(finalSnapshot[substractLength])
+fig, axes = plt.subplots(2, 2)
+indexes = {
+    0: (0,0),
+    1: (0,1),
+    2: (1,0),
+    3: (1,1),
+}
+for index, substractLength in enumerate(finalSnapshot):
+    xAxis = np.arange(0, substractLength, 1)
+    substractSnapshots = np.flip(finalSnapshot[substractLength])
     
-#     for snapshotInstance in substractSnapshots:
-#         axes[indexes[index]].plot(xAxis, snapshotInstance)
-#         axes[indexes[index]].fill_between(xAxis, snapshotInstance)
-#     axes[indexes[index]].set_title(f'substract {substractLength}')
+    for snapshotInstance in substractSnapshots:
+        axes[indexes[index]].plot(xAxis, snapshotInstance)
+        axes[indexes[index]].fill_between(xAxis, snapshotInstance)
+    axes[indexes[index]].set_title(f'substract {substractLength}')
+plt.setp(axes, xlabel='i', ylabel='h')
 
 # PLOT CURVE
-for substractLength in finalRugosity:
-    plt.plot(time, finalRugosity[substractLength], label=f'substract {substractLength}')
-    plt.legend()
-plt.title('DA')
-plt.xscale('log')
-plt.yscale('log')
+# for substractLength in finalRugosity:
+#     plt.plot(time, finalRugosity[substractLength], label=f'substract {substractLength}')
+#     plt.legend()
+# plt.title('DA')
+# plt.xscale('log')
+# plt.yscale('log')
 
 plt.show()
 
